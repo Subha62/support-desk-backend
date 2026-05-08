@@ -1,31 +1,102 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
+// const jwt = require('jsonwebtoken');
+// const User = require('../models/userModel');
+
+// // Protect middleware
+// exports.protect = async (req, res, next) => {
+//   let token =
+//     req.headers.authorization &&
+//     req.headers.authorization.startsWith('Bearer ')
+//       ? req.headers.authorization.split(' ')[1]
+//       : null;
+
+//   if (!token)
+//     return res.status(401).json({ message: 'Not authorized, no token' });
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = await User.findById(decoded.id).select('-password');
+//     next();
+//   } catch (err) {
+//     return res.status(401).json({ message: 'Token invalid or expired' });
+//   }
+// };
+
+// // Admin middleware (FIXED)
+// exports.admin = (req, res, next) => {
+//   if (req.user && req.user.isAdmin) return next();
+//   return res.status(403).json({ message: 'Admin only' });
+// };
+
+
+
+const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
+
 
 // Protect middleware
 exports.protect = async (req, res, next) => {
+
   let token =
     req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer ')
-      ? req.headers.authorization.split(' ')[1]
+    req.headers.authorization.startsWith("Bearer ")
+      ? req.headers.authorization.split(" ")[1]
       : null;
 
-  if (!token)
-    return res.status(401).json({ message: 'Not authorized, no token' });
+  if (!token) {
+    return res.status(401).json({
+      message: "Not authorized, no token",
+    });
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select('-password');
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    req.user = await User.findById(decoded.id)
+      .select("-password");
+
     next();
+
   } catch (err) {
-    return res.status(401).json({ message: 'Token invalid or expired' });
+
+    return res.status(401).json({
+      message: "Token invalid or expired",
+    });
+
   }
 };
 
-// Admin middleware (FIXED)
+
+// Admin middleware
 exports.admin = (req, res, next) => {
-  if (req.user && req.user.isAdmin) return next();
-  return res.status(403).json({ message: 'Admin only' });
+
+  if (
+    req.user &&
+    req.user.role === "admin"
+  ) {
+    return next();
+  }
+
+  return res.status(403).json({
+    message: "Admin only",
+  });
 };
 
 
+// Technician middleware
+exports.technician = (req, res, next) => {
 
+  if (
+    req.user &&
+    req.user.role === "technician"
+  ) {
+    return next();
+  }
+
+  return res.status(403).json({
+    message: "Technician only",
+  });
+};

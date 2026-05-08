@@ -62,25 +62,104 @@
 
 
 
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+
+// const commentSchema = new mongoose.Schema({
+//   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+//   name: String,
+//   text: String,
+//   createdAt: { type: Date, default: Date.now }
+// });
+
+// const ticketSchema = new mongoose.Schema({
+//   title: { type: String, required: true },
+//   description: String,
+//   category: { type: String, default: 'General' },
+//   priority: { type: String, enum: ['Low','Medium','High'], default: 'Low' },
+//   status: { type: String, enum: ['Pending','In Progress','Resolved'], default: 'Pending' },
+//   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+//   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+//   comments: [commentSchema],
+// }, { timestamps: true });
+
+// module.exports = mongoose.model('Ticket', ticketSchema);
+
+
+
+
+const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+
   name: String,
+
   text: String,
-  createdAt: { type: Date, default: Date.now }
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const ticketSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: String,
-  category: { type: String, default: 'General' },
-  priority: { type: String, enum: ['Low','Medium','High'], default: 'Low' },
-  status: { type: String, enum: ['Pending','In Progress','Resolved'], default: 'Pending' },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
-  comments: [commentSchema],
-}, { timestamps: true });
+const ticketSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
 
-module.exports = mongoose.model('Ticket', ticketSchema);
+    description: {
+      type: String,
+      default: "",
+    },
 
+    category: {
+      type: String,
+      default: "General",
+    },
+
+    priority: {
+      type: String,
+      enum: ["Low", "Medium", "High"],
+      default: "Low",
+    },
+
+    // Professional Ticket Status
+    status: {
+      type: String,
+      enum: [
+        "Open",
+        "Assigned",
+        "In Progress",
+        "Resolved",
+        "Closed",
+      ],
+      default: "Open",
+    },
+
+    // User who created the ticket
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    // Technician/Admin assigned to ticket
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    // Ticket comments
+    comments: [commentSchema],
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Ticket", ticketSchema);
